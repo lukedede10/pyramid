@@ -20,13 +20,12 @@
       --radius:22px;
       --shadow: rgba(0,0,0,.25);
       --pad: 18px;
-      --gap: 16px;
+      --gap: 18px;
       --max: 1100px;
 
       /* Pyramid sizing */
-      --pW: 980px;     /* pyramid max width */
-      --tileH: 84px;   /* consistent tile height */
-      --openW: 86px;   /* right "Open" lane inside tiles */
+      --pW: 1260px;     /* max width pyramid can reach */
+      --tileH: 86px;    /* consistent tile height */
     }
 
     *{ box-sizing:border-box; }
@@ -183,12 +182,12 @@
       align-items:stretch;
     }
 
-    /* Row widths (feel free to tweak) */
-    .r1{ --rowW: 420px; grid-template-columns: 1fr; }
+    /* Row widths (true pyramid steps) */
+    .r1{ --rowW: 520px; grid-template-columns: 1fr; }
     .r2{ --rowW: 820px; grid-template-columns: repeat(2, minmax(0,1fr)); }
     .r3{ --rowW: 980px; grid-template-columns: repeat(3, minmax(0,1fr)); }
-    .r4{ --rowW: 980px; grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .r5{ --rowW: 980px; grid-template-columns: repeat(5, minmax(0,1fr)); }
+    .r4{ --rowW: 1120px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .r5{ --rowW: 1260px; grid-template-columns: repeat(5, minmax(0,1fr)); }
 
     /* Mobile: keep pyramid feel but stack */
     @media (max-width: 860px){
@@ -200,25 +199,23 @@
       .r2,.r3,.r4,.r5{ grid-template-columns: 1fr; }
     }
 
-    /* TILE BUTTON */
+    /* TILE BUTTON (no "Open" lane) */
     .tile{
       appearance:none;
       border: 2px solid var(--stroke);
       background: rgba(255,255,255,.96);
       color: var(--text);
       border-radius: var(--radius);
-      padding: 12px 12px;
+      padding: 12px 14px;
       box-shadow: 0 12px 28px rgba(0,0,0,.16);
       cursor:pointer;
       min-height: var(--tileH);
-      display:grid;
-      grid-template-columns: 1fr var(--openW); /* dedicated open lane */
+      display:flex;
       align-items:center;
-      gap: 10px;
-      position:relative;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, filter .12s ease;
+      justify-content:center;
+      text-align:center;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
       user-select:none;
-      text-align:left;
     }
     .tile:focus{ outline: 4px solid rgba(255,255,255,.22); outline-offset: 2px; }
     .tile:hover{ transform: translateY(-1px); box-shadow: 0 16px 34px rgba(0,0,0,.2); }
@@ -233,13 +230,13 @@
       box-shadow: 0 12px 28px rgba(228,0,43,.10), 0 12px 28px rgba(0,0,0,.12);
     }
 
-    /* Title area centered visually */
     .tileMain{
       display:flex;
       align-items:center;
       justify-content:center;
       text-align:center;
-      padding-left: 6px;
+      padding: 0;
+      width: 100%;
     }
 
     /* Line-by-line color */
@@ -248,7 +245,7 @@
       flex-direction:column;
       gap: 3px;
       line-height: 1.05;
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing: .1px;
       font-size: 18px;
     }
@@ -258,37 +255,15 @@
     .tlines .l3{ color: var(--o2); }
     .tlines .l4{ color: var(--red); }
 
-    /* Special top title: CHOOSE red / CUSTOMER blue (same line) */
+    /* Special top title: CHOOSE red / CUSTOMER blue */
     .chooseLine{
       font-weight: 1000;
       letter-spacing: .2px;
-      font-size: 19px;
+      font-size: 20px;
       line-height: 1.05;
     }
     .chooseLine .choose{ color: var(--red); }
     .chooseLine .customer{ color: var(--o2); }
-
-    /* Right-side OPEN lane */
-    .tileOpen{
-      justify-self:end;
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap: 10px;
-      padding-right: 4px;
-      color: rgba(11,18,32,.55);
-      font-weight: 900;
-      font-size: 14px;
-      white-space:nowrap;
-    }
-    .chev{
-      width: 10px;
-      height: 10px;
-      border-right: 2px solid currentColor;
-      border-bottom: 2px solid currentColor;
-      transform: rotate(-45deg);
-      opacity:.65;
-    }
 
     /* Modal */
     .modalOverlay{
@@ -447,43 +422,40 @@
         <div class="pyramid">
           <!-- Row 1 -->
           <div class="prow r1">
-            <button class="tile" data-key="choose_customer" type="button">
+            <button class="tile" data-key="choose_customer" type="button" aria-label="Choose Customer">
               <div class="tileMain">
                 <div class="chooseLine">
                   <span class="choose">CHOOSE</span>
                   <span class="customer"> CUSTOMER.</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
           </div>
 
           <!-- Row 2 -->
           <div class="prow r2">
-            <button class="tile red" data-key="winning_household" type="button">
+            <button class="tile red" data-key="winning_household" type="button" aria-label="Winning the Household">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Winning the</span>
                   <span class="l l2">Household</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile red" data-key="building_trust" type="button">
+            <button class="tile red" data-key="building_trust" type="button" aria-label="Building Trust">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Building</span>
                   <span class="l l2">TRUST</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
           </div>
 
           <!-- Row 3 -->
           <div class="prow r3">
-            <button class="tile blue" data-key="offering_benefits" type="button">
+            <button class="tile blue" data-key="offering_benefits" type="button" aria-label="Offering Benefits">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Offering Benefits</span>
@@ -491,10 +463,9 @@
                   <span class="l l3">Tech Leads</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile blue" data-key="wifi_guarantee" type="button">
+            <button class="tile blue" data-key="wifi_guarantee" type="button" aria-label="WiFi Guarantee">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">WIFI Guarantee</span>
@@ -502,10 +473,9 @@
                   <span class="l l3">Speed test</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile blue" data-key="install_right_first_time" type="button">
+            <button class="tile blue" data-key="install_right_first_time" type="button" aria-label="Install and service it right first time">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Install &amp;</span>
@@ -513,23 +483,21 @@
                   <span class="l l3">first time</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
           </div>
 
           <!-- Row 4 -->
           <div class="prow r4">
-            <button class="tile red" data-key="build_rapport" type="button">
+            <button class="tile red" data-key="build_rapport" type="button" aria-label="Build Rapport with Customer">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Build Rapport</span>
                   <span class="l l2">with Customer</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile red" data-key="keep_updated" type="button">
+            <button class="tile red" data-key="keep_updated" type="button" aria-label="Keep the customer updated running commentary">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Keep the customer</span>
@@ -537,63 +505,57 @@
                   <span class="l l3">– running commentary</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile red" data-key="courteous_knowledgeable" type="button">
+            <button class="tile red" data-key="courteous_knowledgeable" type="button" aria-label="Courteous and Knowledgeable">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Courteous &amp;</span>
                   <span class="l l2">Knowledgeable</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile red" data-key="ownership_accountability" type="button">
+            <button class="tile red" data-key="ownership_accountability" type="button" aria-label="Ownership and Accountability">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Ownership &amp;</span>
                   <span class="l l2">Accountability</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
           </div>
 
           <!-- Row 5 -->
           <div class="prow r5">
-            <button class="tile blue" data-key="call_ahead" type="button">
+            <button class="tile blue" data-key="call_ahead" type="button" aria-label="Call ahead of time">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Call ahead</span>
                   <span class="l l2">of time</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile blue" data-key="arrived_timeslot" type="button">
+            <button class="tile blue" data-key="arrived_timeslot" type="button" aria-label="Arrived in Timeslot">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Arrived in</span>
                   <span class="l l2">Timeslot</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile blue" data-key="introduce_yourself" type="button">
+            <button class="tile blue" data-key="introduce_yourself" type="button" aria-label="Introduce yourself">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Introduce</span>
                   <span class="l l2">yourself</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile blue" data-key="respect_home" type="button">
+            <button class="tile blue" data-key="respect_home" type="button" aria-label="Treated the customers home with respect">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Treated the</span>
@@ -601,17 +563,15 @@
                   <span class="l l3">with respect</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
 
-            <button class="tile blue" data-key="overshoes_id" type="button">
+            <button class="tile blue" data-key="overshoes_id" type="button" aria-label="Wore Overshoes and ID Badge">
               <div class="tileMain">
                 <div class="tlines">
                   <span class="l l1">Wore Overshoes &amp;</span>
                   <span class="l l2">ID Badge</span>
                 </div>
               </div>
-              <div class="tileOpen"><span>Open</span><span class="chev"></span></div>
             </button>
           </div>
 
