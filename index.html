@@ -21,10 +21,10 @@
       --shadow: rgba(0,0,0,.25);
       --pad: 18px;
       --gap: 18px;
-      --max: 1100px;
+      --max: 1400px;
 
       /* Pyramid sizing */
-      --pW: 1260px;     /* max width pyramid can reach */
+      --pW: 1400px;     /* max width pyramid can reach */
       --tileH: 86px;    /* consistent tile height */
     }
 
@@ -181,12 +181,12 @@
       align-items:stretch;
     }
 
-    /* Row widths (true pyramid steps) */
-    .r1{ --rowW: 520px; grid-template-columns: 1fr; }
-    .r2{ --rowW: 820px; grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .r3{ --rowW: 980px; grid-template-columns: repeat(3, minmax(0,1fr)); }
-    .r4{ --rowW: 1120px; grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .r5{ --rowW: 1260px; grid-template-columns: repeat(5, minmax(0,1fr)); }
+/* Row widths (true pyramid steps) */
+.r1{ --rowW: 520px;  grid-template-columns: 1fr; }
+.r2{ --rowW: 760px;  grid-template-columns: repeat(2, minmax(0,1fr)); }
+.r3{ --rowW: 980px;  grid-template-columns: repeat(3, minmax(0,1fr)); }
+.r4{ --rowW: 1180px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+.r5{ --rowW: 1400px; grid-template-columns: repeat(5, minmax(0,1fr)); }
 
     /* Mobile: keep pyramid feel but stack */
     @media (max-width: 860px){
