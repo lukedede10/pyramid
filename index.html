@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Choose Customer Pyramid (VMO2)</title>
+  <style>
+    :root{
+      --bg:#07121f;
+      --card:#ffffff;
+      --text:#0b1220;
+      --muted:#64748b;
+      --stroke:#d6dde8;
+
+      --o2:#005EB8;
+      --o2Dark:#004A93;
+      --red:#E4002B;
+      --redDark:#B80022;
+
+      --radius:20px;
+      --shadow: rgba(0,0,0,.25);
+      --pad: 18px;
+      --gap: 14px;
+      --max: 1050px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 500px at 20% 0%, rgba(0,94,184,.35), transparent 55%),
+        radial-gradient(900px 500px at 80% 0%, rgba(228,0,43,.28), transparent 55%),
+        var(--bg);
+      color: #eaf2ff;
+    }
+
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: calc(var(--pad) + env(safe-area-inset-top)) var(--pad) calc(var(--pad) + env(safe-area-inset-bottom));
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .logoRow{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    .logo{
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      display:grid;
+      place-items:center;
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+      user-select:none;
+      font-weight: 800;
+      letter-spacing: .5px;
+    }
+    .logo.vm{ outline: 2px solid rgba(228,0,43,.35); }
+    .logo.o2{ outline: 2px solid rgba(0,94,184,.35); }
+
+    .titleBlock{ min-width: 0; }
+    .title{
+      margin:0;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin: 4px 0 0;
+      color: rgba(234,242,255,.75);
+      font-size: 13px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(234,242,255,.92);
+      font-size: 13px;
+      white-space: nowrap;
+      user-select:none;
+    }
+    .dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--o2), var(--red));
+      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+    }
+
+    .board{
+      position: relative;
+      margin-top: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: calc(var(--radius) + 6px);
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+
+    /* axis labels (optional visual like your screenshot) */
+    .axis{
+      position:absolute;
+      left: 10px;
+      top: 16px;
+      bottom: 16px;
+      width: 42px;
+      pointer-events:none;
+      opacity: .9;
+    }
+    .axis .line{
+      position:absolute;
+      left: 20px;
+      top: 8px;
+      bottom: 8px;
+      border-left: 2px dashed rgba(255,255,255,.25);
+    }
+    .axis .labelTop, .axis .labelBottom{
+      position:absolute;
+      left: 0;
+      transform: rotate(-90deg);
+      transform-origin: left top;
+      font-size: 12px;
+      letter-spacing: .4px;
+      color: rgba(234,242,255,.8);
+    }
+    .axis .labelTop{ top: 52px; }
+    .axis .labelBottom{ bottom: 74px; }
+    .axis .redMark{
+      position:absolute;
+      left: 19px;
+      bottom: 98px;
+      width: 10px;
+      height: 0;
+      border-left: 2px dashed rgba(228,0,43,.8);
+      border-radius: 2px;
+      opacity:.75;
+    }
+
+    .content{
+      margin-left: 46px; /* space for axis */
+    }
+
+    /* Pyramid layout */
+    .row{
+      display:grid;
+      gap: var(--gap);
+      margin: 12px 0;
+    }
+    .row.r1{ grid-template-columns: 1fr; justify-items:center; }
+    .row.r2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row.r3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .row.r4{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .row.r5{ grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+    /* On small screens, keep it readable */
+    @media (max-width: 860px){
+      .row.r2{ grid-template-columns: 1fr; }
+      .row.r3{ grid-template-columns: 1fr; }
+      .row.r4{ grid-template-columns: 1fr; }
+      .row.r5{ grid-template-columns: 1fr; }
+      .axis{ display:none; }
+      .content{ margin-left:0; }
+    }
+
+    .tile{
+      appearance:none;
+      border: 2px solid var(--stroke);
+      background: var(--card);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 14px 14px;
+      text-align:center;
+      font-weight: 800;
+      line-height: 1.15;
+      box-shadow: 0 12px 28px rgba(0,0,0,.16);
+      cursor:pointer;
+      min-height: 70px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .tile:focus{ outline: 4px solid rgba(255,255,255,.22); outline-offset: 2px; }
+    .tile:hover{ transform: translateY(-1px); box-shadow: 0 16px 34px rgba(0,0,0,.2); }
+    .tile:active{ transform: translateY(0px) scale(.995); }
+
+    .tile.blue{
+      border-color: rgba(0,94,184,.38);
+      box-shadow: 0 12px 28px rgba(0,94,184,.10), 0 12px 28px rgba(0,0,0,.12);
+    }
+    .tile.red{
+      border-color: rgba(228,0,43,.40);
+      box-shadow: 0 12px 28px rgba(228,0,43,.10), 0 12px 28px rgba(0,0,0,.12);
+    }
+    .tile.blue .accent{ color: var(--o2); }
+    .tile.red .accent{ color: var(--red); }
+
+    .tile .hint{
+      position:absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(11,18,32,.45);
+      display:flex;
+      align-items:center;
+      gap: 6px;
+    }
+    .chev{
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg);
+      opacity:.7;
+    }
+
+    /* Modal */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(2,6,14,.72);
+      backdrop-filter: blur(8px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 50;
+    }
+    .modalOverlay.open{ display:flex; }
+
+    .modal{
+      width: min(720px, 100%);
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: calc(var(--radius) + 6px);
+      box-shadow: 0 30px 70px rgba(0,0,0,.35);
+      overflow:hidden;
+      color: var(--text);
+    }
+    .modalHeader{
+      padding: 14px 14px 12px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      background:
+        radial-gradient(700px 220px at 20% 0%, rgba(0,94,184,.15), transparent 60%),
+        radial-gradient(700px 220px at 80% 0%, rgba(228,0,43,.13), transparent 60%),
+        rgba(255,255,255,.96);
+    }
+    .modalTitle{
+      margin:0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+    .modalTag{
+      margin-top: 6px;
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+      font-size: 12px;
+      color: rgba(11,18,32,.6);
+      font-weight: 700;
+    }
+    .tagDot{
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--o2), var(--red));
+    }
+
+    .closeBtn{
+      border: 0;
+      background: rgba(11,18,32,.06);
+      color: rgba(11,18,32,.85);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 800;
+    }
+    .closeBtn:hover{ background: rgba(11,18,32,.10); }
+
+    .modalBody{
+      padding: 14px;
+    }
+    .modalBody p{
+      margin: 0 0 10px;
+      color: rgba(11,18,32,.82);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .modalFooter{
+      padding: 12px 14px 14px;
+      display:flex;
+      justify-content:flex-end;
+      gap: 10px;
+      border-top: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.92);
+    }
+    .primaryBtn{
+      border: 0;
+      border-radius: 16px;
+      padding: 11px 14px;
+      cursor:pointer;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, var(--o2), var(--red));
+      box-shadow: 0 14px 30px rgba(0,0,0,.18);
+    }
+    .primaryBtn:hover{ filter: brightness(1.02); }
+
+    .ghostBtn{
+      border: 1px solid rgba(11,18,32,.15);
+      background: transparent;
+      border-radius: 16px;
+      padding: 11px 14px;
+      cursor:pointer;
+      font-weight: 900;
+      color: rgba(11,18,32,.85);
+    }
+    .ghostBtn:hover{ background: rgba(11,18,32,.04); }
+
+    footer{
+      margin-top: 14px;
+      color: rgba(234,242,255,.7);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 2px 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logoRow" aria-label="Logo placeholders">
+          <div class="logo vm" title="Virgin Media logo placeholder">VM</div>
+          <div class="logo o2" title="O2 logo placeholder">O2</div>
+        </div>
+        <div class="titleBlock">
+          <h1 class="title">Customer Experience Pyramid</h1>
+          <p class="subtitle">Tap any box to open guidance (placeholder content for now).</p>
+        </div>
+      </div>
+
+      <div class="pill" title="Goal">
+        <span class="dot" aria-hidden="true"></span>
+        Guaranteed “Very Satisfied” behaviours
+      </div>
+    </header>
+
+    <section class="board" aria-label="Pyramid layout">
+      <div class="axis" aria-hidden="true">
+        <div class="line"></div>
+        <div class="labelTop">Very satisfied</div>
+        <div class="labelBottom">Satisfied</div>
+        <div class="redMark"></div>
+      </div>
+
+      <div class="content">
+        <!-- Row 1 -->
+        <div class="row r1">
+          <button class="tile" data-key="choose_customer" type="button">
+            <span><span class="accent" style="color:var(--red)">CHOOSE</span> <span class="accent" style="color:var(--o2)">CUSTOMER.</span></span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row r2">
+          <button class="tile red" data-key="winning_household" type="button">
+            <span>Winning the Household</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile red" data-key="building_trust" type="button">
+            <span>Building TRUST</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="row r3">
+          <button class="tile blue" data-key="offering_benefits" type="button">
+            <span>Offering Benefits<br><span class="accent">VOLT</span>, Priority,<br>Tech Leads</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile blue" data-key="wifi_guarantee" type="button">
+            <span>WIFI Guarantee<br>WIFI walk &amp;<br>Speed test</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile blue" data-key="install_right_first_time" type="button">
+            <span>Install &amp;<br>Service it right<br>first time</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="row r4">
+          <button class="tile red" data-key="build_rapport" type="button">
+            <span>Build Rapport<br>with Customer</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile red" data-key="keep_updated" type="button">
+            <span>Keep the customer updated<br>– running commentary</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile red" data-key="courteous_knowledgeable" type="button">
+            <span>Courteous &amp;<br>Knowledgeable</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile red" data-key="ownership_accountability" type="button">
+            <span>Ownership &amp;<br>Accountability</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+        </div>
+
+        <!-- Row 5 -->
+        <div class="row r5">
+          <button class="tile blue" data-key="call_ahead" type="button">
+            <span>Call ahead<br>of time</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile blue" data-key="arrived_timeslot" type="button">
+            <span>Arrived in<br>Timeslot</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile blue" data-key="introduce_yourself" type="button">
+            <span>Introduce<br>yourself</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile blue" data-key="respect_home" type="button">
+            <span>Treated the customers home<br>with respect</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+          <button class="tile blue" data-key="overshoes_id" type="button">
+            <span>Wore Overshoes &amp;<br>ID Badge</span>
+            <span class="hint"><span>Open</span><span class="chev"></span></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Tip: This is set up for GitHub Pages (static). Each tile currently opens a modal.</div>
+      <div>Keyboard: <span class="kbd">Esc</span> closes the panel.</div>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalOverlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal">
+      <div class="modalHeader">
+        <div>
+          <h2 class="modalTitle" id="modalTitle">Title</h2>
+          <div class="modalTag"><span class="tagDot" aria-hidden="true"></span><span id="modalTagText">Guidance</span></div>
+        </div>
+        <button class="closeBtn" id="closeBtn" type="button" aria-label="Close">Close ✕</button>
+      </div>
+      <div class="modalBody" id="modalBody">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+      <div class="modalFooter">
+        <button class="ghostBtn" id="copyBtn" type="button">Copy text</button>
+        <button class="primaryBtn" id="doneBtn" type="button">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Content map (swap Lorem Ipsum for real guidance later)
+    const CONTENT = {
+      choose_customer: {
+        title: "CHOOSE CUSTOMER.",
+        tag: "Foundation",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at dui ac mauris pellentesque tristique.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non justo ut erat vulputate ultricies.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vitae ipsum vitae nisi pulvinar interdum."
+        ]
+      },
+
+      winning_household: {
+        title: "Winning the Household",
+        tag: "Outcome",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae sem vel arcu posuere aliquam."
+        ]
+      },
+      building_trust: {
+        title: "Building TRUST",
+        tag: "Outcome",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc at urna quis dui egestas eleifend.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam erat volutpat."
+        ]
+      },
+
+      offering_benefits: {
+        title: "Offering Benefits (VOLT, Priority, Tech Leads)",
+        tag: "Value add",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis a arcu sed massa porta bibendum.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hac habitasse platea dictumst."
+        ]
+      },
+      wifi_guarantee: {
+        title: "WIFI Guarantee (WIFI walk & Speed test)",
+        tag: "Quality check",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec elit at turpis gravida consectetur.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus blandit, mi nec aliquet hendrerit."
+        ]
+      },
+      install_right_first_time: {
+        title: "Install & Service it right first time",
+        tag: "First time right",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate dolor in urna posuere, id ultrices purus gravida."
+        ]
+      },
+
+      build_rapport: {
+        title: "Build Rapport with Customer",
+        tag: "Behaviour",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus dignissim felis non lorem pellentesque.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vel mi id libero aliquam ultrices."
+        ]
+      },
+      keep_updated: {
+        title: "Keep the customer updated – running commentary",
+        tag: "Communication",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris condimentum metus in purus pharetra.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur et ultricies nulla."
+        ]
+      },
+      courteous_knowledgeable: {
+        title: "Courteous & Knowledgeable",
+        tag: "Professionalism",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper ex at odio luctus.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus, velit sed congue luctus."
+        ]
+      },
+      ownership_accountability: {
+        title: "Ownership & Accountability",
+        tag: "Accountability",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sit amet neque tincidunt, pretium nibh sed, euismod augue.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam porttitor, justo vitae laoreet hendrerit."
+        ]
+      },
+
+      call_ahead: {
+        title: "Call ahead of time",
+        tag: "Arrival standards",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin placerat, eros nec vestibulum posuere.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi."
+        ]
+      },
+      arrived_timeslot: {
+        title: "Arrived in Timeslot",
+        tag: "Arrival standards",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tristique nisl at lectus bibendum.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut at eros nec lorem consequat."
+        ]
+      },
+      introduce_yourself: {
+        title: "Introduce yourself",
+        tag: "Arrival standards",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer dignissim, nisl vitae.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempor risus vel."
+        ]
+      },
+      respect_home: {
+        title: "Treated the customers home with respect",
+        tag: "In-home behaviour",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum non lectus vel nisi.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vitae."
+        ]
+      },
+      overshoes_id: {
+        title: "Wore Overshoes & ID Badge",
+        tag: "In-home behaviour",
+        body: [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam consequat urna at.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque."
+        ]
+      }
+    };
+
+    const overlay = document.getElementById("overlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalTagText = document.getElementById("modalTagText");
+    const modalBody = document.getElementById("modalBody");
+    const closeBtn = document.getElementById("closeBtn");
+    const doneBtn = document.getElementById("doneBtn");
+    const copyBtn = document.getElementById("copyBtn");
+
+    let lastFocusEl = null;
+
+    function openModal(key){
+      const item = CONTENT[key] || { title: "Info", tag: "Guidance", body: ["Lorem ipsum dolor sit amet."] };
+
+      lastFocusEl = document.activeElement;
+
+      modalTitle.textContent = item.title;
+      modalTagText.textContent = item.tag;
+
+      modalBody.innerHTML = item.body.map(p => `<p>${escapeHtml(p)}</p>`).join("");
+
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden","false");
+      closeBtn.focus();
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal(){
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+      if(lastFocusEl && typeof lastFocusEl.focus === "function") lastFocusEl.focus();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // Tile clicks
+    document.querySelectorAll(".tile").forEach(btn=>{
+      btn.addEventListener("click", () => openModal(btn.dataset.key));
+    });
+
+    // Close handlers
+    closeBtn.addEventListener("click", closeModal);
+    doneBtn.addEventListener("click", closeModal);
+
+    overlay.addEventListener("click", (e)=>{
+      if(e.target === overlay) closeModal();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+    });
+
+    copyBtn.addEventListener("click", async ()=>{
+      const text = `${modalTitle.textContent}\n\n` +
+        Array.from(modalBody.querySelectorAll("p")).map(p => p.textContent).join("\n\n");
+
+      try{
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "Copied ✓";
+        setTimeout(()=> copyBtn.textContent = "Copy text", 1200);
+      }catch{
+        copyBtn.textContent = "Copy failed";
+        setTimeout(()=> copyBtn.textContent = "Copy text", 1200);
+      }
+    });
+  </script>
+</body>
+</html>
