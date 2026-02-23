@@ -620,11 +620,15 @@
 
   <script>
     const CONTENT = {
-      choose_customer: { title:"CHOOSE CUSTOMER.", tag:"Foundation", body:[
-        "Read here: <a href="https://teams.microsoft.com/l/message/19:14854784-a987-4e8d-8805-b9b6179af738_8ae44ce9-63d4-4c31-9c62-9c8e565a73cb@unq.gbl.spaces/1771841548022?context=%7B%22contextType%22%3A%22chat%22%7D" target="_blank"> </a>",
-        "Read here: <a href="https://virginmediauk.sharepoint.com/sites/ChooseCustomer#the-fix-list." target="_blank"> </a>",
-        "Read here: <a href="https://virginmediauk.sharepoint.com/sites/ChooseCustomer?referrer=Yammer&referrerScenario=Feed.View" target="_blank"> </a>",
-      ]},
+     choose_customer: {
+  title: "CHOOSE CUSTOMER.",
+  tag: "Foundation",
+  body: [
+    'Read here: <a href="https://teams.microsoft.com/l/message/19:14854784-a987-4e8d-8805-b9b6179af738_8ae44ce9-63d4-4c31-9c62-9c8e565a73cb@unq.gbl.spaces/1771841548022?context=%7B%22contextType%22%3A%22chat%22%7D" target="_blank" rel="noopener">Teams link</a>',
+    'Read here: <a href="https://virginmediauk.sharepoint.com/sites/ChooseCustomer#the-fix-list." target="_blank" rel="noopener">Fix list</a>',
+    'Read here: <a href="https://virginmediauk.sharepoint.com/sites/ChooseCustomer?referrer=Yammer&referrerScenario=Feed.View" target="_blank" rel="noopener">Choose Customer site</a>'
+  ]
+},
       winning_household: { title:"Winning the Household", tag:"Outcome", body:[
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.",
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae sem vel arcu posuere aliquam."
@@ -698,7 +702,7 @@
 
       modalTitle.textContent = item.title;
       modalTagText.textContent = item.tag;
-      modalBody.innerHTML = item.body.map(p => `<p>${escapeHtml(p)}</p>`).join("");
+      modalBody.innerHTML = item.body.map(p => `<p>${p}</p>`).join("");
 
       overlay.classList.add("open");
       overlay.setAttribute("aria-hidden","false");
